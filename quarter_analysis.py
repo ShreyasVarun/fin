@@ -45,7 +45,7 @@ def final_code():
         try:
             sp_date_loc = df.index.get_loc(specific_dates[i])
             cl_price = df.iloc[sp_date_loc][7]
-            print(cl_price)
+            #print(cl_price)
         except:
             break
               
@@ -56,7 +56,7 @@ def final_code():
                 sp_date_loc = sp_date_loc + da
                 try:
                     cl_price_doi = df.iloc[sp_date_loc]['Close']
-                    percent_change = round(((cl_price - cl_price_doi)/(cl_price))*100,1)
+                    percent_change = round(((cl_price_doi - cl_price)/(cl_price))*100,1)
                     doi_lis.append(percent_change)
                 except KeyError:
                     doi_lis.append('nan')
