@@ -6,9 +6,9 @@ Created on Sun Apr 12 14:24:38 2020
 @author: varun
 """
 #import re
-from nsepy import get_history
+#from nsepy import get_history
 from datetime import date
-from datetime import timedelta
+#from datetime import timedelta
 import pandas as pd
 
 
@@ -35,16 +35,16 @@ def input_dates():
            print("Please enter date in dd-mm-yyyy only. example 23-04-2020")
     return dates
 
-def final_code():    
-    df = get_data('BAJFINANCE',(2019,4,12),(2020,4,10))
+def final_code(dfs):    
+    #df = get_data('BAJFINANCE',(2019,4,12),(2020,4,10))
     specific_dates = input_dates()
     df_dict = {}
     doi = [-30, -10, -7 , -5, -3 , 0 , 3, 7, 10]
     for i in specific_dates:
         doi_lis = []    
         try:
-            sp_date_loc = df.index.get_loc(specific_dates[i])
-            cl_price = df.iloc[sp_date_loc][7]
+            sp_date_loc = dfs.index.get_loc(specific_dates[i])
+            cl_price = dfs.iloc[sp_date_loc][7]
             #print(cl_price)
         except:
             break
@@ -55,7 +55,7 @@ def final_code():
             else:
                 sp_date_loc = sp_date_loc + da
                 try:
-                    cl_price_doi = df.iloc[sp_date_loc]['Close']
+                    cl_price_doi = dfs.iloc[sp_date_loc]['Close']
                     percent_change = round(((cl_price_doi - cl_price)/(cl_price))*100,1)
                     doi_lis.append(percent_change)
                 except KeyError:
@@ -67,5 +67,8 @@ def final_code():
     df_final  = pd.DataFrame.from_dict(df_dict,orient = 'index', columns = doi)
     print(df_final)
 
-final_df = final_code()
+#df = get_data('BAJFINANCE',(2019,4,12),(2020,4,10))
+df2 = pd.read_excel('bajaj.xlsx',index_col = 0) # ************ FILEPATH LINE *********
+#final_df = final_code(df)
+final_df2 = final_code(df2)
             
