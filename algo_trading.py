@@ -7,7 +7,6 @@ import numpy as np
 import talib
 from datetime import datetime, timedelta
 import json
-from talib import MA_Type
 import time
 import pickle as pkl
 import warnings
