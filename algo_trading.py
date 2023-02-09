@@ -11,6 +11,7 @@ from talib import MA_Type
 import time
 import pickle as pkl
 import warnings
+import ta
 
 
 # Callback to receive ticks.
@@ -52,9 +53,9 @@ def scalp_signal(df,per = 5):
     df['wild'] = pd.concat([a,b])
     df['ewm'] = df['close'].ewm(span=per,min_periods=0,adjust=False,ignore_na=False).mean()
     df['cross'] = df['ewm'] - df['wild']
-    df['bu'],_,df['bl'] = talib.BBANDS(df['close'], matype=MA_Type.T3)
-    df['RSI'] = talib.RSI(df['close'],timeperiod=per)
-    df['MOM'] = talib.MOM(df['close'], timeperiod=per)
+    df['bu']=ta.volatility.BollingerBands(df['close'],window = per, window_dev = 2).bollinger_hband().round(2)
+    df['bl']=ta.volatility.BollingerBands(df['close'],window = per, window_dev = 2).bollinger_lband().round(2)
+    df['RSI'] = ta.momentum.rsi(df['close'],window = per).round(2)
     df['bol'] = df['bu'] - df['bl']   
     df['signal'] = np.where(((df['low']-df['bl'])<0.5)&(df['cross']>0)&(df['RSI']>50)&(df['RSI']<80),'buy',                            
                             np.where(((df['bu']-df['high'])>0.5)&(df['cross']<0)&
@@ -66,12 +67,11 @@ def scalp_signal(df,per = 5):
 
 def trend_check(df5):
     df5 = df5.iloc[1:]
-    df5['bu'],_,df5['bl'] = talib.BBANDS(df5['close'], timeperiod = 5, matype=MA_Type.SMA)
+    df5['bu']=ta.volatility.BollingerBands(df5['close'],window = 5, window_dev = 2).bollinger_hband().round(2)
+    df5['bl']=ta.volatility.BollingerBands(df5['close'],window = 5, window_dev = 2).bollinger_lband().round(2)
     df5['bol_dif'] = df5['bu'] - df5['bl']
-    df5['bl_close']= np.where(((df5['close'] - df5['bl'])/df5['bol_dif'] < 0.1)&
-                              (df5['low']>df5['bl']), 'down',
-                     np.where(((df5['close'] - df5['bl'])/df5['bol_dif'] > 0.8)&
-                              (df5['high']<df5['bu']), 'up','side'))
+    df5['bl_close']= np.where(((df5['close'] - df5['bl'])/df5['bol_dif'] < 0.1)&(df5['low']>df5['bl']),'down',
+                     np.where(((df5['close'] - df5['bl'])/df5['bol_dif'] > 0.8)&(df5['high']<df5['bu']),'up','side'))
     return df5    
     
 def assess_enter_exit(stock_code):
@@ -224,7 +224,7 @@ def assess_enter_exit(stock_code):
         
         while True:
             positions = breeze.get_portfolio_positions()
-            print(f'{positions = }')
+            print(f'{positions = }\n')
             if positions['Error'] == 'No Positions available.':
                 print(f'All is well! at {datetime.now()}\n')
                 open_position = False    
