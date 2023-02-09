@@ -171,7 +171,8 @@ def assess_enter_exit(stock_code):
                 td = (datetime.now() - df_stock_track.tail(1)['low'].index).seconds[0]
                 if td > 10:
                     feed = breeze.subscribe_feeds(exchange_code="NSE", stock_code=stock_code, product_type="cash", expiry_date="", \
-                        strike_price="", right="", interval="1second")                    
+                        strike_price="", right="", interval="1second") 
+                    time.sleep(1)
                     continue
                 else:pass
                 print(f'{df_stock_track.tail(1)["close"]=}\n')
@@ -219,6 +220,7 @@ def assess_enter_exit(stock_code):
                 break                
             else:
                 exit_details = None
+                time.sleep(1)
                 continue
         
         while True:
